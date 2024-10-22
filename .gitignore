@@ -30,3 +30,4 @@ parameters.json
 transform.conf.json
 CustomResources.json
 amplify-dependent-resources-ref.d.ts
+amplify.state
