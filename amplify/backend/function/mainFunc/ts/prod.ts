@@ -1,3 +1,5 @@
+import { CadastroRepository } from "./cadastro.rep";
+import { DDBClient } from "./ddb-utils";
 import { Produto } from "./prod.type";
 import { 
   AttributeValue, DynamoDBClient,
@@ -198,4 +200,43 @@ export async function updateProdTST() {
   const ddbResult2 = await clientDDB.send(new UpdateItemCommand(params2));
   console.log('Registro antes do UpdateItem: ', ddbResult2.Attributes);
   await mostrarItem("PV345", "PRODUTO");
+}
+
+export async function createProds() {
+  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const prod1 = buildProd1();
+  await cadRep.putDDBItem(prod1.codigo, "PRODUTO", prod1)
+  const prod2 = buildProd2();
+  await cadRep.putDDBItem(prod2.codigo, "PRODUTO", prod2)
+  console.log('Registros criados com putItem!')
+}
+
+export async function upsertProds() {
+  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const prod1 = buildProd1();
+  await cadRep.upsertDDBItem(prod1.codigo, "PRODUTO", prod1)
+  const prod2 = buildProd2();
+  await cadRep.upsertDDBItem(prod2.codigo, "PRODUTO", prod2)
+  console.log('Registros criados com updateItem!')
+}
+
+function buildProd1() {
+  const prod1: Produto = {
+    codigo: "RL001",
+    nome: "RELOGIO DE PULSO",
+    preco: 80,
+    dataCriacao: '2024-11-02T00:25:34.795Z',
+    armazem: {nome: 'CD-SP', qtde: 23}
+  }
+  return prod1;
+}
+
+function buildProd2() {
+  const prod2: Produto = {
+    codigo: "PV345",
+    nome: "PLACA DE VIDEO",
+    preco: 120,
+    dataCriacao: '2024-11-02T00:25:34.795Z',
+  }
+  return prod2;
 }

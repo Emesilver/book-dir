@@ -7,6 +7,8 @@ async function handler(event) {
     // await createProd();
     // await getProdTST();
     // await putProdTST();
-    await (0, prod_1.updateProdTST)();
+    // await updateProdTST();
+    // await createProds();
+    await (0, prod_1.upsertProds)();
     return { result: 'OK - Typescript' };
 }

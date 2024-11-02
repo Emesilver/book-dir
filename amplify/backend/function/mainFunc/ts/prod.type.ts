@@ -3,4 +3,8 @@ export type Produto = {
     nome: string;
     preco: number;
     dataCriacao?: string;
+    armazem?: {
+        nome: string,
+        qtde: number,
+    }
 }
