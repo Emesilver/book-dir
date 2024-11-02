@@ -3,15 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DDBClient = void 0;
 exports.buildUpdateExpression = buildUpdateExpression;
 exports.objectToDDB = objectToDDB;
+exports.ddbToObject = ddbToObject;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
- * Create a list of props to be used at UpdateExpression
+ * Creates a list of props to be used at UpdateExpression
  */
 function buildUpdateExpression(obj) {
     return Object.keys(obj).map((key) => key + '=:' + key).join(', ');
 }
 /**
- * Converte um objeto para formato de gravacao Dynamo:
+ * Converts an object to DynamoDB format:
  * Record<string, AttributeValue>
  */
 function objectToDDB(obj, keyNamePrefix) {
@@ -44,13 +45,39 @@ function objectToDDB(obj, keyNamePrefix) {
     return retObject;
 }
 /**
- * Return an AttributeValue according to the value type
+ * Converts an DynamoDB item to object
+ */
+function ddbToObject(rawItem) {
+    const retObj = {};
+    for (const key of Object.keys(rawItem)) {
+        if (key !== 'pk' && key !== 'sk') {
+            if (rawItem[key].M)
+                retObj[key] = ddbToObject(rawItem[key].M);
+            else
+                retObj[key] = buildObjectProp(rawItem[key]);
+        }
+    }
+    return retObj;
+}
+/**
+ * Returns an AttributeValue according to the value type
  */
 function buildAttributeValue(value) {
     switch (typeof value) {
         case 'string': return { S: value };
         case 'boolean': return { BOOL: value };
         case 'number': return { N: value.toString() };
+    }
+}
+/**
+ * Returns the value depending on AttributeValue type
+ */
+function buildObjectProp(attValue) {
+    const attValueType = Object.keys(attValue)[0];
+    switch (attValueType) {
+        case 'S': return attValue.S;
+        case 'N': return parseFloat(attValue.N);
+        case 'BOOL': return attValue.BOOL;
     }
 }
 class DDBClient {

@@ -220,6 +220,12 @@ export async function upsertProds() {
   console.log('Registros criados com updateItem!')
 }
 
+export async function readProd() {
+  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const prod = await cadRep.getDDBItem<Produto>('RL001', "PRODUTO");
+  console.log('Produto lido:', prod.nome)
+}
+
 function buildProd1() {
   const prod1: Produto = {
     codigo: "RL001",

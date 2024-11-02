@@ -7,6 +7,7 @@ exports.putProdTST = putProdTST;
 exports.updateProdTST = updateProdTST;
 exports.createProds = createProds;
 exports.upsertProds = upsertProds;
+exports.readProd = readProd;
 const cadastro_rep_1 = require("./cadastro.rep");
 const ddb_utils_1 = require("./ddb-utils");
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
@@ -213,6 +214,11 @@ async function upsertProds() {
     const prod2 = buildProd2();
     await cadRep.upsertDDBItem(prod2.codigo, "PRODUTO", prod2);
     console.log('Registros criados com updateItem!');
+}
+async function readProd() {
+    const cadRep = new cadastro_rep_1.CadastroRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const prod = await cadRep.getDDBItem('RL001', "PRODUTO");
+    console.log('Produto lido:', prod.nome);
 }
 function buildProd1() {
     const prod1 = {

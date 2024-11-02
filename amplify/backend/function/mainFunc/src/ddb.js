@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.putDDBRawItem = putDDBRawItem;
 exports.updateDDBRawItem = updateDDBRawItem;
+exports.getDDBRawItem = getDDBRawItem;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 async function putDDBRawItem(ddbClient, tableName, rawItem) {
     const params = {
@@ -12,7 +13,7 @@ async function putDDBRawItem(ddbClient, tableName, rawItem) {
         await ddbClient.send(new client_dynamodb_1.PutItemCommand(params));
     }
     catch (error) {
-        console.log('Falha em putDDBItem:', error.message);
+        console.log('putDDBItem failed:', error.message);
     }
 }
 async function updateDDBRawItem(ddbClient, tableName, key, updateExp, expAttValues) {
@@ -26,6 +27,19 @@ async function updateDDBRawItem(ddbClient, tableName, key, updateExp, expAttValu
         await ddbClient.send(new client_dynamodb_1.UpdateItemCommand(params));
     }
     catch (error) {
-        console.log('Falha em updateDDBItem:', error.message);
+        console.log('updateDDBItem failed:', error.message);
+    }
+}
+async function getDDBRawItem(ddbClient, tableName, key) {
+    const params = {
+        TableName: tableName,
+        Key: key
+    };
+    try {
+        const getResult = await ddbClient.send(new client_dynamodb_1.GetItemCommand(params));
+        return getResult.Item;
+    }
+    catch (error) {
+        console.log('getDDBItem failed:', error.message);
     }
 }
