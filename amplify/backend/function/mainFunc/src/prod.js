@@ -8,7 +8,8 @@ exports.updateProdTST = updateProdTST;
 exports.createProds = createProds;
 exports.upsertProds = upsertProds;
 exports.readProd = readProd;
-const cadastro_rep_1 = require("./cadastro.rep");
+exports.queryProds = queryProds;
+const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 async function createProd() {
@@ -200,7 +201,7 @@ async function updateProdTST() {
     await mostrarItem("PV345", "PRODUTO");
 }
 async function createProds() {
-    const cadRep = new cadastro_rep_1.CadastroRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod1 = buildProd1();
     await cadRep.putDDBItem(prod1.codigo, "PRODUTO", prod1);
     const prod2 = buildProd2();
@@ -208,7 +209,7 @@ async function createProds() {
     console.log('Registros criados com putItem!');
 }
 async function upsertProds() {
-    const cadRep = new cadastro_rep_1.CadastroRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod1 = buildProd1();
     await cadRep.upsertDDBItem(prod1.codigo, "PRODUTO", prod1);
     const prod2 = buildProd2();
@@ -216,9 +217,19 @@ async function upsertProds() {
     console.log('Registros criados com updateItem!');
 }
 async function readProd() {
-    const cadRep = new cadastro_rep_1.CadastroRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod = await cadRep.getDDBItem('RL001', "PRODUTO");
     console.log('Produto lido:', prod.nome);
+}
+async function queryProds() {
+    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const indexInfo = {
+        indexName: 'sk-pk-index',
+        pkFieldName: 'sk',
+        skFieldName: 'pk'
+    };
+    const prods = await cadRep.queryDDBItemsPk("PRODUTO", indexInfo);
+    console.log('Produtos:', prods);
 }
 function buildProd1() {
     const prod1 = {

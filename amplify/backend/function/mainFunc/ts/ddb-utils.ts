@@ -1,10 +1,17 @@
 import { DynamoDBClient,  AttributeValue} from '@aws-sdk/client-dynamodb'
 
 /**
- * Creates a list of props to be used at UpdateExpression
+ * Creates a list of props to be used in a SET UpdateExpression
  */
-export function buildUpdateExpression(obj: object) {
-  return Object.keys(obj).map((key) => key + '=:' + key).join(', ');
+export function buildSETUpdateExpression(obj: object) {
+  return 'SET ' + Object.keys(obj).map((key) => key + '=:' + key).join(', ');
+}
+
+/**
+ * Creates a list of fields to be used at REMOVE UpdateExpression
+ */
+export function buildREMOVEUpdateExpression(fields: string[]) {
+  return 'REMOVE ' + fields.join(', ');
 }
 
 /**

@@ -1,4 +1,4 @@
-import { createProd, createProds, getProdTST, putProdTST, upsertProds, updateProdTST, readProd } from "./prod";
+import { createProd, createProds, getProdTST, putProdTST, upsertProds, updateProdTST, readProd, queryProds } from "./prod";
 
 export async function handler(event: any) {
     console.log(`EVENT: ${JSON.stringify(event)}`);
@@ -9,7 +9,8 @@ export async function handler(event: any) {
 
     // await createProds();
     // await upsertProds();
-    await readProd();
+    // await readProd();
+    await queryProds();
 
     return {result: 'OK - Typescript'};
 }

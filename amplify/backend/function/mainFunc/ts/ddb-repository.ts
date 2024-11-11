@@ -1,6 +1,6 @@
 import { DynamoDBClient,  AttributeValue } from '@aws-sdk/client-dynamodb'
-import { buildUpdateExpression, ddbToObject, objectToDDB } from './ddb-utils';
-import { getDDBRawItem, putDDBRawItem, updateDDBRawItem } from './ddb';
+import { buildSETUpdateExpression, ddbToObject, objectToDDB } from './ddb-utils';
+import { getDDBRawItem, IndexInfo, putDDBRawItem, queryDDBRawItems, SKFilter, updateDDBRawItem } from './ddb';
   
 export class DDBRepository {
   private tableName: string;
@@ -21,7 +21,7 @@ export class DDBRepository {
 
   public async upsertDDBItem(pk: string, sk: string, item: Object) {
     const key: Record<string, AttributeValue> = {pk: {S: pk}, sk: {S: sk}};
-    const updateExp = 'SET ' + buildUpdateExpression(item);
+    const updateExp = buildSETUpdateExpression(item);
     const updateExpValues = objectToDDB(item, ':');
     await updateDDBRawItem(
       this.ddbClient, 
@@ -35,5 +35,16 @@ export class DDBRepository {
     const rawItem = await getDDBRawItem(this.ddbClient, this.tableName, key);
     const retObj = ddbToObject<T>(rawItem);
     return retObj;
+  }
+
+  public async queryDDBItemsPk<T>(pk: string, indexInfo?: IndexInfo) {
+    const rawItems = await queryDDBRawItems(
+      this.ddbClient, 
+      this.tableName,
+      indexInfo,
+      pk
+    );
+    const retObjs = rawItems.map(rawItem => ddbToObject<T>(rawItem));
+    return retObjs;
   }
 }

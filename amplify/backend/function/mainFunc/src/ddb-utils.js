@@ -1,15 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DDBClient = void 0;
-exports.buildUpdateExpression = buildUpdateExpression;
+exports.buildSETUpdateExpression = buildSETUpdateExpression;
+exports.buildREMOVEUpdateExpression = buildREMOVEUpdateExpression;
 exports.objectToDDB = objectToDDB;
 exports.ddbToObject = ddbToObject;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
- * Creates a list of props to be used at UpdateExpression
+ * Creates a list of props to be used in a SET UpdateExpression
  */
-function buildUpdateExpression(obj) {
-    return Object.keys(obj).map((key) => key + '=:' + key).join(', ');
+function buildSETUpdateExpression(obj) {
+    return 'SET ' + Object.keys(obj).map((key) => key + '=:' + key).join(', ');
+}
+/**
+ * Creates a list of fields to be used at REMOVE UpdateExpression
+ */
+function buildREMOVEUpdateExpression(fields) {
+    return 'REMOVE ' + fields.join(', ');
 }
 /**
  * Converts an object to DynamoDB format:

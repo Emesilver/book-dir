@@ -10,6 +10,7 @@ async function handler(event) {
     // await updateProdTST();
     // await createProds();
     // await upsertProds();
-    await (0, prod_1.readProd)();
+    // await readProd();
+    await (0, prod_1.queryProds)();
     return { result: 'OK - Typescript' };
 }

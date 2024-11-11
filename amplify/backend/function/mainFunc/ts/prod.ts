@@ -1,4 +1,5 @@
-import { CadastroRepository } from "./cadastro.rep";
+import { IndexInfo } from "./ddb";
+import { DDBRepository } from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 import { Produto } from "./prod.type";
 import { 
@@ -203,7 +204,7 @@ export async function updateProdTST() {
 }
 
 export async function createProds() {
-  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const cadRep = new DDBRepository('cadastro-dev', DDBClient.client());
   const prod1 = buildProd1();
   await cadRep.putDDBItem(prod1.codigo, "PRODUTO", prod1)
   const prod2 = buildProd2();
@@ -212,7 +213,7 @@ export async function createProds() {
 }
 
 export async function upsertProds() {
-  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const cadRep = new DDBRepository('cadastro-dev', DDBClient.client());
   const prod1 = buildProd1();
   await cadRep.upsertDDBItem(prod1.codigo, "PRODUTO", prod1)
   const prod2 = buildProd2();
@@ -221,9 +222,20 @@ export async function upsertProds() {
 }
 
 export async function readProd() {
-  const cadRep = new CadastroRepository('cadastro-dev', DDBClient.client());
+  const cadRep = new DDBRepository('cadastro-dev', DDBClient.client());
   const prod = await cadRep.getDDBItem<Produto>('RL001', "PRODUTO");
   console.log('Produto lido:', prod.nome)
+}
+
+export async function queryProds() {
+  const cadRep = new DDBRepository('cadastro-dev', DDBClient.client());
+  const indexInfo: IndexInfo = {
+    indexName: 'sk-pk-index',
+    pkFieldName: 'sk',
+    skFieldName: 'pk'
+  }
+  const prods = await cadRep.queryDDBItemsPk<Produto>("PRODUTO", indexInfo);
+  console.log('Produtos:', prods)
 }
 
 function buildProd1() {

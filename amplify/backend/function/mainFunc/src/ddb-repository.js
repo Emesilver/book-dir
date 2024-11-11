@@ -18,7 +18,7 @@ class DDBRepository {
     }
     async upsertDDBItem(pk, sk, item) {
         const key = { pk: { S: pk }, sk: { S: sk } };
-        const updateExp = 'SET ' + (0, ddb_utils_1.buildUpdateExpression)(item);
+        const updateExp = (0, ddb_utils_1.buildSETUpdateExpression)(item);
         const updateExpValues = (0, ddb_utils_1.objectToDDB)(item, ':');
         await (0, ddb_1.updateDDBRawItem)(this.ddbClient, this.tableName, key, updateExp, updateExpValues);
     }
@@ -27,6 +27,11 @@ class DDBRepository {
         const rawItem = await (0, ddb_1.getDDBRawItem)(this.ddbClient, this.tableName, key);
         const retObj = (0, ddb_utils_1.ddbToObject)(rawItem);
         return retObj;
+    }
+    async queryDDBItemsPk(pk, indexInfo) {
+        const rawItems = await (0, ddb_1.queryDDBRawItems)(this.ddbClient, this.tableName, indexInfo, pk);
+        const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
+        return retObjs;
     }
 }
 exports.DDBRepository = DDBRepository;
