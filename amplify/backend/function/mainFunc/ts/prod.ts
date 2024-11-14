@@ -1,4 +1,4 @@
-import { IndexInfo } from "./ddb";
+import { IndexInfo, QueryOptions } from "./ddb";
 import { DDBRepository } from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 import { Produto } from "./prod.type";
@@ -234,7 +234,8 @@ export async function queryProds() {
     pkFieldName: 'sk',
     skFieldName: 'pk'
   }
-  const prods = await cadRep.queryDDBItemsPk<Produto>("PRODUTO", indexInfo);
+  const queryOptions: QueryOptions = {indexInfo}; 
+  const prods = await cadRep.queryDDBItems<Produto>("PRODUTO", queryOptions);
   console.log('Produtos:', prods)
 }
 

@@ -1,3 +1,4 @@
+import { queryPaymentTypesByName } from "./pay-type";
 import { createProd, createProds, getProdTST, putProdTST, upsertProds, updateProdTST, readProd, queryProds } from "./prod";
 
 export async function handler(event: any) {
@@ -10,7 +11,8 @@ export async function handler(event: any) {
     // await createProds();
     // await upsertProds();
     // await readProd();
-    await queryProds();
+    // await queryProds();
+    await queryPaymentTypesByName();
 
     return {result: 'OK - Typescript'};
 }

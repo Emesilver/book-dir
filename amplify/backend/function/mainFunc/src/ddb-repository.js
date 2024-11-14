@@ -28,8 +28,8 @@ class DDBRepository {
         const retObj = (0, ddb_utils_1.ddbToObject)(rawItem);
         return retObj;
     }
-    async queryDDBItemsPk(pk, indexInfo) {
-        const rawItems = await (0, ddb_1.queryDDBRawItems)(this.ddbClient, this.tableName, indexInfo, pk);
+    async queryDDBItems(pk, queryOptions) {
+        const rawItems = await (0, ddb_1.queryDDBRawItems)(this.ddbClient, this.tableName, pk, queryOptions);
         const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
         return retObjs;
     }

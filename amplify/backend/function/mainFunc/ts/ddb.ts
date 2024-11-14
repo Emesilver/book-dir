@@ -89,48 +89,54 @@ export type SKFilter = {
   skBeginsWith?: string;
   skBetween?: {start: string, end: string}
 }
+export type QueryOptions = {
+  skFilter?: SKFilter;
+  indexInfo?: IndexInfo;
+}
 /**
 * Query items on a table or index depending on how indexInfo is defined.
 * @param ddbClient Client dynamoDB
 * @param tableName Table name to add data
-* @param indexInfo Information about the index to query
 * @param pk Partition key value to query on table or index
-* @param skFilter Query sort key instructions
+* @param queryOptions Index and sort key information to filter
 * @returns Records in DynamoDB format
 */
 export async function queryDDBRawItems(
   ddbClient: DynamoDBClient,
   tableName: string,
-  indexInfo: IndexInfo | null | undefined,
   pk: string,
-  skFilter?: SKFilter
+  queryOptions?: QueryOptions
 ): Promise<Record<string, AttributeValue>[]> {
-  const pkFieldName = indexInfo ? indexInfo.pkFieldName : 'pk';
-  const skFieldName = indexInfo ? indexInfo.skFieldName : 'sk';
-  let skCondition = '';
+  const pkFieldName = queryOptions?.indexInfo 
+    ? queryOptions.indexInfo.pkFieldName 
+    : 'pk';
+  const skFieldName = queryOptions?.indexInfo 
+    ? queryOptions.indexInfo.skFieldName 
+    : 'sk';
+  let keysCondition = `${pkFieldName} = :pk`;
   let expAttrValues: Record<string, AttributeValue> = {':pk': {S: pk}}
-  if (skFilter?.sk) {
-    skCondition = `${pkFieldName} = :sk`;
-    expAttrValues[':sk'] = {S: skFilter.sk}
+  if (queryOptions?.skFilter?.sk) {
+    keysCondition += ` AND ${pkFieldName} = :sk`;
+    expAttrValues[':sk'] = {S: queryOptions.skFilter.sk}
   }
-  if (skFilter?.skBeginsWith) {
-    skCondition = `begins_with(${skFieldName}, :skBW)`;
-    expAttrValues[':skBW'] = {S: skFilter.skBeginsWith}
+  if (queryOptions?.skFilter?.skBeginsWith) {
+    keysCondition += ` AND begins_with(${skFieldName}, :skBW)`;
+    expAttrValues[':skBW'] = {S: queryOptions.skFilter.skBeginsWith}
   }
-  if (skFilter?.skBetween) {
-    skCondition = `${skFieldName} BETWEEN :skStart AND :skEnd`;
-    expAttrValues[':skStart'] = {S: skFilter.skBetween.start};
-    expAttrValues[':skEnd'] = {S: skFilter.skBetween.end};
+  if (queryOptions?.skFilter?.skBetween) {
+    keysCondition += ` AND ${skFieldName} BETWEEN :skStart AND :skEnd`;
+    expAttrValues[':skStart'] = {S: queryOptions.skFilter.skBetween.start};
+    expAttrValues[':skEnd'] = {S: queryOptions.skFilter.skBetween.end};
   }
   const params: QueryCommandInput = {
     TableName: tableName,
-    KeyConditionExpression: `${pkFieldName} = :pk` + (skCondition ? ' AND ': '') + skCondition,
+    KeyConditionExpression: keysCondition,
     ExpressionAttributeValues: expAttrValues
   }
-  if (indexInfo) params.IndexName = indexInfo.indexName;
+  if (queryOptions?.indexInfo) params.IndexName = queryOptions.indexInfo.indexName;
   try {
-    const getResult = await ddbClient.send(new QueryCommand(params));
-    return getResult.Items
+    const queryResult = await ddbClient.send(new QueryCommand(params));
+    return queryResult.Items
   } catch (error) {
     throw new Error('queryDDBRawItems failed:' + error.message)
   }

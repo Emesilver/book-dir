@@ -228,7 +228,8 @@ async function queryProds() {
         pkFieldName: 'sk',
         skFieldName: 'pk'
     };
-    const prods = await cadRep.queryDDBItemsPk("PRODUTO", indexInfo);
+    const queryOptions = { indexInfo };
+    const prods = await cadRep.queryDDBItems("PRODUTO", queryOptions);
     console.log('Produtos:', prods);
 }
 function buildProd1() {

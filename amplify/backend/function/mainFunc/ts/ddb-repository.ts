@@ -1,6 +1,6 @@
 import { DynamoDBClient,  AttributeValue } from '@aws-sdk/client-dynamodb'
 import { buildSETUpdateExpression, ddbToObject, objectToDDB } from './ddb-utils';
-import { getDDBRawItem, IndexInfo, putDDBRawItem, queryDDBRawItems, SKFilter, updateDDBRawItem } from './ddb';
+import { getDDBRawItem, putDDBRawItem, queryDDBRawItems, QueryOptions, updateDDBRawItem } from './ddb';
   
 export class DDBRepository {
   private tableName: string;
@@ -37,12 +37,12 @@ export class DDBRepository {
     return retObj;
   }
 
-  public async queryDDBItemsPk<T>(pk: string, indexInfo?: IndexInfo) {
+  public async queryDDBItems<T>(pk: string, queryOptions?: QueryOptions) {
     const rawItems = await queryDDBRawItems(
       this.ddbClient, 
       this.tableName,
-      indexInfo,
-      pk
+      pk,
+      queryOptions
     );
     const retObjs = rawItems.map(rawItem => ddbToObject<T>(rawItem));
     return retObjs;
