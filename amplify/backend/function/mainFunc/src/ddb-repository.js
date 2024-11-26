@@ -33,5 +33,10 @@ class DDBRepository {
         const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
         return retObjs;
     }
+    async scanDDBItems(scanOptions) {
+        const rawItems = await (0, ddb_1.scanDDBRawItems)(this.ddbClient, this.tableName, scanOptions);
+        const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
+        return retObjs;
+    }
 }
 exports.DDBRepository = DDBRepository;

@@ -2,7 +2,8 @@ import { DynamoDBClient,  AttributeValue,
     PutItemCommandInput, PutItemCommand,
     UpdateItemCommandInput, UpdateItemCommand,
     GetItemCommandInput, GetItemCommand,
-    QueryCommandInput, QueryCommand
+    QueryCommandInput, QueryCommand,
+    ScanCommandInput, ScanCommand
  } from '@aws-sdk/client-dynamodb'
 
 /**
@@ -39,7 +40,7 @@ export async function updateDDBRawItem(
   ddbClient: DynamoDBClient, 
   tableName: string, 
   key: Record<string, AttributeValue>, 
-  updateExp: string, 
+  updateExp: string,
   expAttValues: Record<string, AttributeValue>
 ) {
   const params: UpdateItemCommandInput = {
@@ -139,5 +140,35 @@ export async function queryDDBRawItems(
     return queryResult.Items
   } catch (error) {
     throw new Error('queryDDBRawItems failed:' + error.message)
+  }
+}
+
+export type ScanFilter = {
+  filterExpression: string;
+  expressionAttributeValues: Record<string, AttributeValue>;
+}
+export type ScanOptions = {
+  indexName?: string;
+  scanFilter?: ScanFilter;
+}
+export async function scanDDBRawItems(
+  ddbClient: DynamoDBClient,
+  tableName: string,
+  scanOptions?: ScanOptions,
+){
+  const params: ScanCommandInput = {
+    TableName: tableName,
+    ReturnConsumedCapacity: 'TOTAL',
+  }
+  if (scanOptions?.scanFilter) {
+    params.FilterExpression = scanOptions.scanFilter.filterExpression;
+    params.ExpressionAttributeValues = scanOptions.scanFilter.expressionAttributeValues;
+  }
+  try {
+    const scanResult = await ddbClient.send(new ScanCommand(params));
+    console.log('scanResult:', scanResult.ConsumedCapacity)
+    return scanResult.Items
+  } catch (error) {
+    throw new Error('scanDDBRawItems failed:' + error.message)
   }
 }

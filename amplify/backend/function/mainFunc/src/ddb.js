@@ -4,6 +4,7 @@ exports.putDDBRawItem = putDDBRawItem;
 exports.updateDDBRawItem = updateDDBRawItem;
 exports.getDDBRawItem = getDDBRawItem;
 exports.queryDDBRawItems = queryDDBRawItems;
+exports.scanDDBRawItems = scanDDBRawItems;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
 * Add a new record or override an existing one
@@ -108,5 +109,23 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
     }
     catch (error) {
         throw new Error('queryDDBRawItems failed:' + error.message);
+    }
+}
+async function scanDDBRawItems(ddbClient, tableName, scanOptions) {
+    const params = {
+        TableName: tableName,
+        ReturnConsumedCapacity: 'TOTAL',
+    };
+    if (scanOptions?.scanFilter) {
+        params.FilterExpression = scanOptions.scanFilter.filterExpression;
+        params.ExpressionAttributeValues = scanOptions.scanFilter.expressionAttributeValues;
+    }
+    try {
+        const scanResult = await ddbClient.send(new client_dynamodb_1.ScanCommand(params));
+        console.log('scanResult:', scanResult.ConsumedCapacity);
+        return scanResult.Items;
+    }
+    catch (error) {
+        throw new Error('scanDDBRawItems failed:' + error.message);
     }
 }

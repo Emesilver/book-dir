@@ -1,4 +1,4 @@
-import { IndexInfo, QueryOptions } from "./ddb";
+import { IndexInfo, QueryOptions, ScanFilter, ScanOptions } from "./ddb";
 import { DDBRepository } from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 import { Produto } from "./prod.type";
@@ -6,7 +6,7 @@ import {
   AttributeValue, DynamoDBClient,
   PutItemCommandInput, PutItemCommand,
   UpdateItemCommandInput, UpdateItemCommand,
-  GetItemCommandInput, GetItemCommand 
+  GetItemCommandInput, GetItemCommand, 
 } from '@aws-sdk/client-dynamodb'
 
 export async function createProd() {
@@ -236,6 +236,17 @@ export async function queryProds() {
   }
   const queryOptions: QueryOptions = {indexInfo}; 
   const prods = await cadRep.queryDDBItems<Produto>("PRODUTO", queryOptions);
+  console.log('Produtos:', prods)
+}
+
+export async function scanProds() {
+  const cadRep = new DDBRepository('cadastro-dev', DDBClient.client());
+  const scanFilter: ScanFilter = {
+    filterExpression: 'sk = :sk',
+    expressionAttributeValues: {':sk': {S: 'PRODUTO'}}
+  }
+  const scanOptions: ScanOptions = {scanFilter};
+  const prods = await cadRep.scanDDBItems(scanOptions);
   console.log('Produtos:', prods)
 }
 

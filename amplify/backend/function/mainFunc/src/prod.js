@@ -9,6 +9,7 @@ exports.createProds = createProds;
 exports.upsertProds = upsertProds;
 exports.readProd = readProd;
 exports.queryProds = queryProds;
+exports.scanProds = scanProds;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
@@ -230,6 +231,16 @@ async function queryProds() {
     };
     const queryOptions = { indexInfo };
     const prods = await cadRep.queryDDBItems("PRODUTO", queryOptions);
+    console.log('Produtos:', prods);
+}
+async function scanProds() {
+    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const scanFilter = {
+        filterExpression: 'sk = :sk',
+        expressionAttributeValues: { ':sk': { S: 'PRODUTO' } }
+    };
+    const scanOptions = { scanFilter };
+    const prods = await cadRep.scanDDBItems(scanOptions);
     console.log('Produtos:', prods);
 }
 function buildProd1() {
