@@ -2,8 +2,8 @@ import { DynamoDBClient,  AttributeValue,
     PutItemCommandInput, PutItemCommand,
     UpdateItemCommandInput, UpdateItemCommand,
     GetItemCommandInput, GetItemCommand,
-    QueryCommandInput, QueryCommand,
-    ScanCommandInput, ScanCommand
+    QueryCommandInput, QueryCommand, QueryCommandOutput,
+    ScanCommandInput, ScanCommand, ScanCommandOutput
  } from '@aws-sdk/client-dynamodb'
 
 /**
@@ -136,8 +136,14 @@ export async function queryDDBRawItems(
   }
   if (queryOptions?.indexInfo) params.IndexName = queryOptions.indexInfo.indexName;
   try {
-    const queryResult = await ddbClient.send(new QueryCommand(params));
-    return queryResult.Items
+    let queryResult: QueryCommandOutput;
+    let allItems: Record<string, AttributeValue>[] = [];
+    do {
+      params.ExclusiveStartKey = queryResult?.LastEvaluatedKey;
+      queryResult = await ddbClient.send(new QueryCommand(params));
+      allItems = allItems.concat(queryResult.Items);
+    } while (queryResult.LastEvaluatedKey) 
+    return allItems;
   } catch (error) {
     throw new Error('queryDDBRawItems failed:' + error.message)
   }
@@ -158,16 +164,20 @@ export async function scanDDBRawItems(
 ){
   const params: ScanCommandInput = {
     TableName: tableName,
-    ReturnConsumedCapacity: 'TOTAL',
   }
   if (scanOptions?.scanFilter) {
     params.FilterExpression = scanOptions.scanFilter.filterExpression;
     params.ExpressionAttributeValues = scanOptions.scanFilter.expressionAttributeValues;
   }
   try {
-    const scanResult = await ddbClient.send(new ScanCommand(params));
-    console.log('scanResult:', scanResult.ConsumedCapacity)
-    return scanResult.Items
+    let scanResult: ScanCommandOutput;
+    let allItems: Record<string, AttributeValue>[] = [];
+    do {
+      params.ExclusiveStartKey = scanResult?.LastEvaluatedKey;
+      scanResult = await ddbClient.send(new ScanCommand(params));
+      allItems = allItems.concat(scanResult.Items);
+    } while (scanResult.LastEvaluatedKey) 
+    return allItems;
   } catch (error) {
     throw new Error('scanDDBRawItems failed:' + error.message)
   }

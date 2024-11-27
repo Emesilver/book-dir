@@ -104,8 +104,14 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
     if (queryOptions?.indexInfo)
         params.IndexName = queryOptions.indexInfo.indexName;
     try {
-        const queryResult = await ddbClient.send(new client_dynamodb_1.QueryCommand(params));
-        return queryResult.Items;
+        let queryResult;
+        let allItems = [];
+        do {
+            params.ExclusiveStartKey = queryResult?.LastEvaluatedKey;
+            queryResult = await ddbClient.send(new client_dynamodb_1.QueryCommand(params));
+            allItems = allItems.concat(queryResult.Items);
+        } while (queryResult.LastEvaluatedKey);
+        return allItems;
     }
     catch (error) {
         throw new Error('queryDDBRawItems failed:' + error.message);
@@ -114,16 +120,20 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
 async function scanDDBRawItems(ddbClient, tableName, scanOptions) {
     const params = {
         TableName: tableName,
-        ReturnConsumedCapacity: 'TOTAL',
     };
     if (scanOptions?.scanFilter) {
         params.FilterExpression = scanOptions.scanFilter.filterExpression;
         params.ExpressionAttributeValues = scanOptions.scanFilter.expressionAttributeValues;
     }
     try {
-        const scanResult = await ddbClient.send(new client_dynamodb_1.ScanCommand(params));
-        console.log('scanResult:', scanResult.ConsumedCapacity);
-        return scanResult.Items;
+        let scanResult;
+        let allItems = [];
+        do {
+            params.ExclusiveStartKey = scanResult?.LastEvaluatedKey;
+            scanResult = await ddbClient.send(new client_dynamodb_1.ScanCommand(params));
+            allItems = allItems.concat(scanResult.Items);
+        } while (scanResult.LastEvaluatedKey);
+        return allItems;
     }
     catch (error) {
         throw new Error('scanDDBRawItems failed:' + error.message);

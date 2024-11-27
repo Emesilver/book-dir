@@ -13,8 +13,8 @@ export async function handler(event: any) {
     // await upsertProds();
     // await readProd();
     // await queryProds();
-    // await scanProds();
-     await queryPaymentTypesByName();
+    await scanProds();
+    // await queryPaymentTypesByName();
 
     return {result: 'OK - Typescript'};
 }

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = handler;
-const pay_type_1 = require("./pay-type");
+const prod_1 = require("./prod");
 async function handler(event) {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     // await createProd();
@@ -13,7 +13,7 @@ async function handler(event) {
     // await upsertProds();
     // await readProd();
     // await queryProds();
-    // await scanProds();
-    await (0, pay_type_1.queryPaymentTypesByName)();
+    await (0, prod_1.scanProds)();
+    // await queryPaymentTypesByName();
     return { result: 'OK - Typescript' };
 }
