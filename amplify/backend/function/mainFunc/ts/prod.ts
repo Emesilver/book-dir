@@ -7,7 +7,22 @@ import {
   PutItemCommandInput, PutItemCommand,
   UpdateItemCommandInput, UpdateItemCommand,
   GetItemCommandInput, GetItemCommand, 
+  QueryCommandInput, QueryCommand 
 } from '@aws-sdk/client-dynamodb'
+
+export async function testCmd() {
+  const clientDDB = new DynamoDBClient({region: 'us-east-2'});
+  const params: QueryCommandInput = {
+    TableName: "cadastro-dev"
+  }
+  try {
+    const ddbResult = await clientDDB.send(new QueryCommand(params));
+    console.log("Query result:", ddbResult);
+  } catch (err) {
+    console.error("Erro na Query:", err);
+  }
+
+}
 
 export async function createProd() {
   const prod: Produto = {

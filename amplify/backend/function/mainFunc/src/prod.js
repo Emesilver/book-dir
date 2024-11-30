@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.testCmd = testCmd;
 exports.createProd = createProd;
 exports.getProd = getProd;
 exports.getProdTST = getProdTST;
@@ -13,6 +14,19 @@ exports.scanProds = scanProds;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
+async function testCmd() {
+    const clientDDB = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-2' });
+    const params = {
+        TableName: "cadastro-dev"
+    };
+    try {
+        const ddbResult = await clientDDB.send(new client_dynamodb_1.QueryCommand(params));
+        console.log("Query result:", ddbResult);
+    }
+    catch (err) {
+        console.error("Erro na Query:", err);
+    }
+}
 async function createProd() {
     const prod = {
         codigo: "RL001",
