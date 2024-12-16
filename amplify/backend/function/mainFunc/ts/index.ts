@@ -1,7 +1,7 @@
 import { queryPaymentTypesByName } from "./pay-type";
 import { createProd, getProd, createProds, testCmd,
     getProdTST, putProdTST, upsertProds, updateProdTST, readProd, queryProds, scanProds } from "./prod";
-import { seedPedidos } from "./seed-orders";
+import { seedOrders } from "./seed-orders";
 
 export async function handler(event: any) {
     console.log(`EVENT: ${JSON.stringify(event)}`);
@@ -19,7 +19,8 @@ export async function handler(event: any) {
 
     //await testCmd();
 
-    await seedPedidos();
+    await seedOrders();
+    //await listOrdersByCustomer();
 
     return {result: 'OK - Typescript'};
 }

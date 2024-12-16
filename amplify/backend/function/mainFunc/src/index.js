@@ -16,6 +16,7 @@ async function handler(event) {
     // await scanProds();
     // await queryPaymentTypesByName();
     //await testCmd();
-    await (0, seed_orders_1.seedPedidos)();
+    await (0, seed_orders_1.seedOrders)();
+    //await listOrdersByCustomer();
     return { result: 'OK - Typescript' };
 }

@@ -1,34 +1,34 @@
-export type Pedido = {
-	codigo_cliente: string;
-	id_pedido: string;
-	nome_cliente: string;
-	data_criacao: string;
-	valor_total: number;
-	tipo_registro: 'PEDIDO';
+export type Order = {
+	client_id: string;
+	order_id: string;
+	client_name: string;
+	creation_date: string;
+	total_value: number;
+	record_type: 'ORDER';
 }
 
-export type PedidoItem = {
-	codigo_cliente: string;
-	id_pedido: string;
-	id_item: string;
-	nome_produto: string;
-	quantidade: number;
-	preco: number;
-	tipo_registro: 'ITEM';
+export type OrderItem = {
+	client_id: string;
+	order_id: string;
+	item_id: string;
+	product_name: string;
+	quantity: number;
+	price: number;
+	record_type: 'ITEM';
 }
 
-export type PedidoPagto = {
-	codigo_cliente: string;
-	id_pedido: string;
-	id_pagto: string;
-	descricao_pagto: string;
-	valor: number;
-	data_pagto?: string;
-	tipo_registro: 'PAGTO';
+export type OrderPayment = {
+	client_id: string;
+	order_id: string;
+	paymnt_id: string;
+	paymnt_description: string;
+	paymnt_value: number;
+	paymnt_date?: string;
+	record_type: 'PAYMNT';
 }
 
-export type GrupoPedido = {
-	pedido: Pedido;
-	items: PedidoItem[];
-	pagtos: PedidoPagto[];
+export type OrderGroup = {
+	order: Order;
+	items: OrderItem[];
+	payments: OrderPayment[];
 }
