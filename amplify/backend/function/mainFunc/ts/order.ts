@@ -22,19 +22,35 @@ export async function queryOrderDetail(customer: string, orderId: string) {
   const skFilterPaymnt: SKFilter = {
     skBeginsWith: "ORD-PM#" + orderId,
   };
-  
+
   // Leitura em paralelo
   const [order, items, payments] = await Promise.all([
     cadRep.getDDBItem<Order>(customer, "ORD#" + orderId),
     cadRep.queryDDBItems<OrderItem>(customer, { skFilter: skFilterItem }),
     cadRep.queryDDBItems<OrderPayment>(customer, { skFilter: skFilterPaymnt }),
   ]);
-  
+
   const orderGroup: OrderGroup = {
     order,
     items,
     payments,
   };
-  console.log("Order detail:", orderGroup)
+  console.log("Order detail:", orderGroup);
   return orderGroup;
+}
+
+export async function getRecentOrder(customer: string) {
+  const cadRep = new DDBRepository("cadastro-dev", DDBClient.client());
+  const queryOptions: QueryOptions = {
+    scanForward: false,
+    limit: 1,
+  };
+  const recentOrderQry = await cadRep.queryDDBItems<Order>(
+    customer,
+    queryOptions
+  );
+  let ret = null;
+  if (recentOrderQry.length === 1) ret = recentOrderQry[0];
+  console.log("Recent order:", ret);
+  return ret;
 }

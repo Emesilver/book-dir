@@ -103,14 +103,24 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
     };
     if (queryOptions?.indexInfo)
         params.IndexName = queryOptions.indexInfo.indexName;
+    if (queryOptions?.limit)
+        params.Limit = queryOptions.limit;
+    if (queryOptions?.scanForward !== undefined)
+        params.ScanIndexForward = queryOptions.scanForward;
     try {
         let queryResult;
         let allItems = [];
+        let limitMet = false;
         do {
             params.ExclusiveStartKey = queryResult?.LastEvaluatedKey;
             queryResult = await ddbClient.send(new client_dynamodb_1.QueryCommand(params));
             allItems = allItems.concat(queryResult.Items);
-        } while (queryResult.LastEvaluatedKey);
+            if (queryOptions?.limit) {
+                if (allItems.length > queryOptions.limit)
+                    allItems = allItems.slice(0, queryOptions.limit);
+                limitMet = allItems.length === queryOptions.limit;
+            }
+        } while (queryResult.LastEvaluatedKey && !limitMet);
         return allItems;
     }
     catch (error) {

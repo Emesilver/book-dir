@@ -93,6 +93,8 @@ export type SKFilter = {
 export type QueryOptions = {
   skFilter?: SKFilter;
   indexInfo?: IndexInfo;
+  scanForward?: boolean;
+  limit?: number;
 }
 /**
 * Query items on a table or index depending on how indexInfo is defined.
@@ -135,14 +137,23 @@ export async function queryDDBRawItems(
     ExpressionAttributeValues: expAttrValues
   }
   if (queryOptions?.indexInfo) params.IndexName = queryOptions.indexInfo.indexName;
+  if (queryOptions?.limit) params.Limit = queryOptions.limit;
+  if (queryOptions?.scanForward !== undefined) params.ScanIndexForward = queryOptions.scanForward;
   try {
     let queryResult: QueryCommandOutput;
     let allItems: Record<string, AttributeValue>[] = [];
+    let limitMet = false;
     do {
       params.ExclusiveStartKey = queryResult?.LastEvaluatedKey;
       queryResult = await ddbClient.send(new QueryCommand(params));
       allItems = allItems.concat(queryResult.Items);
-    } while (queryResult.LastEvaluatedKey) 
+
+      if (queryOptions?.limit) {
+        if (allItems.length > queryOptions.limit) 
+          allItems = allItems.slice(0,queryOptions.limit)
+        limitMet = allItems.length === queryOptions.limit;
+      }
+    } while (queryResult.LastEvaluatedKey && !limitMet) 
     return allItems;
   } catch (error) {
     throw new Error('queryDDBRawItems failed:' + error.message)

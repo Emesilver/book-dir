@@ -1,4 +1,4 @@
-import { queryOrderDetail, queryOrdersByCustomer } from "./order";
+import { getRecentOrder, queryOrderDetail, queryOrdersByCustomer } from "./order";
 import { queryPaymentTypesByName } from "./pay-type";
 import { createProd, getProd, createProds, testCmd,
     getProdTST, putProdTST, upsertProds, updateProdTST, readProd, queryProds, scanProds } from "./prod";
@@ -22,7 +22,8 @@ export async function handler(event: any) {
 
     //await seedOrders();
     //await queryOrdersByCustomer('CLI001');
-    await queryOrderDetail('CLI001', '241228AC12')
+    //await queryOrderDetail('CLI001', '241228AC12')
+    await getRecentOrder('CLI001')
 
     return {result: 'OK - Typescript'};
 }

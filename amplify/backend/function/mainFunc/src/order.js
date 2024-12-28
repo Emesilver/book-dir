@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryOrdersByCustomer = queryOrdersByCustomer;
 exports.queryOrderDetail = queryOrderDetail;
+exports.getRecentOrder = getRecentOrder;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function queryOrdersByCustomer(customer) {
@@ -35,4 +36,17 @@ async function queryOrderDetail(customer, orderId) {
     };
     console.log("Order detail:", orderGroup);
     return orderGroup;
+}
+async function getRecentOrder(customer) {
+    const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
+    const queryOptions = {
+        scanForward: false,
+        limit: 1,
+    };
+    const recentOrderQry = await cadRep.queryDDBItems(customer, queryOptions);
+    let ret = null;
+    if (recentOrderQry.length === 1)
+        ret = recentOrderQry[0];
+    console.log("Recent order:", ret);
+    return ret;
 }
