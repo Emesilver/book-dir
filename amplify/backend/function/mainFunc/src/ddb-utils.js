@@ -55,6 +55,8 @@ function objectToDDB(obj, keyNamePrefix) {
  * Converts an DynamoDB item to object
  */
 function ddbToObject(rawItem) {
+    if (!rawItem)
+        return null;
     const retObj = {};
     for (const key of Object.keys(rawItem)) {
         if (key !== 'pk' && key !== 'sk') {

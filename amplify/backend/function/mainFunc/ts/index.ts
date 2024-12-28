@@ -1,3 +1,4 @@
+import { queryOrderDetail, queryOrdersByCustomer } from "./order";
 import { queryPaymentTypesByName } from "./pay-type";
 import { createProd, getProd, createProds, testCmd,
     getProdTST, putProdTST, upsertProds, updateProdTST, readProd, queryProds, scanProds } from "./prod";
@@ -19,8 +20,9 @@ export async function handler(event: any) {
 
     //await testCmd();
 
-    await seedOrders();
-    //await listOrdersByCustomer();
+    //await seedOrders();
+    //await queryOrdersByCustomer('CLI001');
+    await queryOrderDetail('CLI001', '241228AC12')
 
     return {result: 'OK - Typescript'};
 }
