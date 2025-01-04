@@ -19,6 +19,7 @@ async function handler(event) {
     //await seedOrders();
     //await queryOrdersByCustomer('CLI001');
     //await queryOrderDetail('CLI001', '241228AC12')
-    await (0, order_1.getRecentOrder)('CLI001');
+    //await getRecentOrder('CLI001')
+    await (0, order_1.queryBigOrders)('CLI001', 100);
     return { result: 'OK - Typescript' };
 }

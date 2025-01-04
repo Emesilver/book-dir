@@ -1,4 +1,9 @@
-import { QueryOptions, SKFilter } from "./ddb";
+import {
+  AfterReadFilter,
+  InefficientFilter,
+  QueryOptions,
+  SKFilter,
+} from "./ddb";
 import { DDBRepository } from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 import { Order, OrderGroup, OrderItem, OrderPayment } from "./order.type";
@@ -42,6 +47,7 @@ export async function queryOrderDetail(customer: string, orderId: string) {
 export async function getRecentOrder(customer: string) {
   const cadRep = new DDBRepository("cadastro-dev", DDBClient.client());
   const queryOptions: QueryOptions = {
+    skFilter: { skBeginsWith: "ORD#" },
     scanForward: false,
     limit: 1,
   };
@@ -53,4 +59,27 @@ export async function getRecentOrder(customer: string) {
   if (recentOrderQry.length === 1) ret = recentOrderQry[0];
   console.log("Recent order:", ret);
   return ret;
+}
+
+export async function queryBigOrders(customer: string, minimumValue: number) {
+  const cadRep = new DDBRepository("cadastro-dev", DDBClient.client());
+  const skFilter: SKFilter = {
+    skBeginsWith: "ORD#",
+  };
+  const afterReadFilter: AfterReadFilter = {
+    filterExpression: "total_value >= :minimumValue",
+    expressionAttributeValues: {
+      ":minimumValue": { N: minimumValue.toFixed(2) },
+    },
+  };
+  const inefficientFilter: InefficientFilter = {
+    queryOptions: { skFilter },
+    afterReadFilter: afterReadFilter,
+  };
+  const bigOrders = await cadRep.inefficientQueryDDBItems<Order>(
+    customer,
+    inefficientFilter
+  );
+  console.log("Big orders:", bigOrders);
+  return bigOrders;
 }

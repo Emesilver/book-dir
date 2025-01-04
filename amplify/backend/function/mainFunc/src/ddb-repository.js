@@ -38,5 +38,10 @@ class DDBRepository {
         const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
         return retObjs;
     }
+    async inefficientQueryDDBItems(pk, inefficientFilter) {
+        const rawItems = await (0, ddb_1.inefficientQueryDDBRawItems)(this.ddbClient, this.tableName, pk, inefficientFilter);
+        const retObjs = rawItems.map(rawItem => (0, ddb_utils_1.ddbToObject)(rawItem));
+        return retObjs;
+    }
 }
 exports.DDBRepository = DDBRepository;
