@@ -1,10 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DDBClient = void 0;
-exports.buildSETUpdateExpression = buildSETUpdateExpression;
-exports.buildREMOVEUpdateExpression = buildREMOVEUpdateExpression;
-exports.objectToDDB = objectToDDB;
-exports.ddbToObject = ddbToObject;
+exports.DDBClient = exports.ddbToObject = exports.objectToDDB = exports.buildREMOVEUpdateExpression = exports.buildSETUpdateExpression = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
  * Creates a list of props to be used in a SET UpdateExpression
@@ -12,12 +8,14 @@ const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 function buildSETUpdateExpression(obj) {
     return 'SET ' + Object.keys(obj).map((key) => key + '=:' + key).join(', ');
 }
+exports.buildSETUpdateExpression = buildSETUpdateExpression;
 /**
  * Creates a list of fields to be used at REMOVE UpdateExpression
  */
 function buildREMOVEUpdateExpression(fields) {
     return 'REMOVE ' + fields.join(', ');
 }
+exports.buildREMOVEUpdateExpression = buildREMOVEUpdateExpression;
 /**
  * Converts an object to DynamoDB format:
  * Record<string, AttributeValue>
@@ -51,6 +49,7 @@ function objectToDDB(obj, keyNamePrefix) {
     }
     return retObject;
 }
+exports.objectToDDB = objectToDDB;
 /**
  * Converts an DynamoDB item to object
  */
@@ -68,6 +67,7 @@ function ddbToObject(rawItem) {
     }
     return retObj;
 }
+exports.ddbToObject = ddbToObject;
 /**
  * Returns an AttributeValue according to the value type
  */

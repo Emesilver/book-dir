@@ -1,16 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testCmd = testCmd;
-exports.createProd = createProd;
-exports.getProd = getProd;
-exports.getProdTST = getProdTST;
-exports.putProdTST = putProdTST;
-exports.updateProdTST = updateProdTST;
-exports.createProds = createProds;
-exports.upsertProds = upsertProds;
-exports.readProd = readProd;
-exports.queryProds = queryProds;
-exports.scanProds = scanProds;
+exports.scanProds = exports.queryProds = exports.readProd = exports.upsertProds = exports.createProds = exports.updateProdTST = exports.putProdTST = exports.getProdTST = exports.getProd = exports.createProd = exports.testCmd = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
@@ -27,6 +17,7 @@ async function testCmd() {
         console.error("Erro na Query:", err);
     }
 }
+exports.testCmd = testCmd;
 async function createProd() {
     const prod = {
         codigo: "RL001",
@@ -52,6 +43,7 @@ async function createProd() {
         console.error("Erro ao inserir item:", err);
     }
 }
+exports.createProd = createProd;
 async function getProd() {
     const params = {
         TableName: "cadastro-dev",
@@ -69,6 +61,7 @@ async function getProd() {
         console.error("Erro ao inserir item:", err);
     }
 }
+exports.getProd = getProd;
 async function getProdTST() {
     const params = {
         TableName: "cadastro-dev",
@@ -88,6 +81,7 @@ async function getProdTST() {
         console.error("Erro ao inserir item:", err);
     }
 }
+exports.getProdTST = getProdTST;
 async function putProdTST() {
     const clientDDB = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-2' });
     const mostrarItem = async (pk, sk) => {
@@ -146,6 +140,7 @@ async function putProdTST() {
     console.log('Registro antes do PutItem: ', ddbResult2.Attributes);
     await mostrarItem("PV345", "PRODUTO");
 }
+exports.putProdTST = putProdTST;
 async function updateProdTST() {
     const clientDDB = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-2' });
     const mostrarItem = async (pk, sk) => {
@@ -215,6 +210,7 @@ async function updateProdTST() {
     console.log('Registro antes do UpdateItem: ', ddbResult2.Attributes);
     await mostrarItem("PV345", "PRODUTO");
 }
+exports.updateProdTST = updateProdTST;
 async function createProds() {
     const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod1 = buildProd1();
@@ -223,6 +219,7 @@ async function createProds() {
     await cadRep.putDDBItem(prod2.codigo, "PRODUTO", prod2);
     console.log('Registros criados com putItem!');
 }
+exports.createProds = createProds;
 async function upsertProds() {
     const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod1 = buildProd1();
@@ -231,11 +228,13 @@ async function upsertProds() {
     await cadRep.upsertDDBItem(prod2.codigo, "PRODUTO", prod2);
     console.log('Registros criados com updateItem!');
 }
+exports.upsertProds = upsertProds;
 async function readProd() {
     const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const prod = await cadRep.getDDBItem('RL001', "PRODUTO");
     console.log('Produto lido:', prod.nome);
 }
+exports.readProd = readProd;
 async function queryProds() {
     const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const indexInfo = {
@@ -247,6 +246,7 @@ async function queryProds() {
     const prods = await cadRep.queryDDBItems("PRODUTO", queryOptions);
     console.log('Produtos:', prods);
 }
+exports.queryProds = queryProds;
 async function scanProds() {
     const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const scanFilter = {
@@ -257,6 +257,7 @@ async function scanProds() {
     const prods = await cadRep.scanDDBItems(scanOptions);
     console.log('Produtos:', prods);
 }
+exports.scanProds = scanProds;
 function buildProd1() {
     const prod1 = {
         codigo: "RL001",

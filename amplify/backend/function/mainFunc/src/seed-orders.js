@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.seedOrders = seedOrders;
+exports.seedOrders = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function seedOrders() {
@@ -8,6 +8,7 @@ async function seedOrders() {
     await saveGroupOrder(buildGroupOrder2());
     await saveGroupOrder(buildGroupOrder3());
 }
+exports.seedOrders = seedOrders;
 async function saveGroupOrder({ order, items, payments }) {
     const seedOrderRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
     const pk = order.client_id;

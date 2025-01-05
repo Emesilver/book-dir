@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryPaymentTypesByName = queryPaymentTypesByName;
+exports.queryPaymentTypesByName = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function queryPaymentTypesByName() {
@@ -22,3 +22,4 @@ async function queryPaymentTypesByName() {
         console.log('error:', error);
     }
 }
+exports.queryPaymentTypesByName = queryPaymentTypesByName;

@@ -1,9 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryOrdersByCustomer = queryOrdersByCustomer;
-exports.queryOrderDetail = queryOrderDetail;
-exports.getRecentOrder = getRecentOrder;
-exports.queryBigOrders = queryBigOrders;
+exports.queryBigOrders = exports.getRecentOrder = exports.queryOrderDetail = exports.queryOrdersByCustomer = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function queryOrdersByCustomer(customer) {
@@ -16,6 +13,7 @@ async function queryOrdersByCustomer(customer) {
     console.log("Orders:", orders);
     return orders;
 }
+exports.queryOrdersByCustomer = queryOrdersByCustomer;
 async function queryOrderDetail(customer, orderId) {
     const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
     const skFilterItem = {
@@ -38,6 +36,7 @@ async function queryOrderDetail(customer, orderId) {
     console.log("Order detail:", orderGroup);
     return orderGroup;
 }
+exports.queryOrderDetail = queryOrderDetail;
 async function getRecentOrder(customer) {
     const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
     const queryOptions = {
@@ -52,6 +51,7 @@ async function getRecentOrder(customer) {
     console.log("Recent order:", ret);
     return ret;
 }
+exports.getRecentOrder = getRecentOrder;
 async function queryBigOrders(customer, minimumValue) {
     const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
     const skFilter = {
@@ -71,3 +71,4 @@ async function queryBigOrders(customer, minimumValue) {
     console.log("Big orders:", bigOrders);
     return bigOrders;
 }
+exports.queryBigOrders = queryBigOrders;

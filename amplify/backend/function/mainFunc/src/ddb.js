@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.putDDBRawItem = putDDBRawItem;
-exports.updateDDBRawItem = updateDDBRawItem;
-exports.getDDBRawItem = getDDBRawItem;
-exports.queryDDBRawItems = queryDDBRawItems;
-exports.scanDDBRawItems = scanDDBRawItems;
-exports.inefficientQueryDDBRawItems = inefficientQueryDDBRawItems;
+exports.inefficientQueryDDBRawItems = exports.scanDDBRawItems = exports.queryDDBRawItems = exports.getDDBRawItem = exports.updateDDBRawItem = exports.putDDBRawItem = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
  * Add a new record or override an existing one
@@ -25,6 +20,7 @@ async function putDDBRawItem(ddbClient, tableName, rawItem) {
         console.log("putDDBRawItem failed:", error.message);
     }
 }
+exports.putDDBRawItem = putDDBRawItem;
 /**
  * Update an existing record or add a new one if the key doesn't exist
  * @param ddbClient Client dynamoDB
@@ -47,6 +43,7 @@ async function updateDDBRawItem(ddbClient, tableName, key, updateExp, expAttValu
         console.log("updateDDBRawItem failed:", error.message);
     }
 }
+exports.updateDDBRawItem = updateDDBRawItem;
 /**
  * Read a DynamoDB item
  * @param ddbClient Client dynamoDB
@@ -67,6 +64,7 @@ async function getDDBRawItem(ddbClient, tableName, key) {
         throw new Error("getDDBRawItem failed:" + error.message);
     }
 }
+exports.getDDBRawItem = getDDBRawItem;
 /**
  * Query items on a table or index depending on how indexInfo is defined.
  * @param ddbClient Client dynamoDB
@@ -128,6 +126,7 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
         throw new Error("queryDDBRawItems failed:" + error.message);
     }
 }
+exports.queryDDBRawItems = queryDDBRawItems;
 async function scanDDBRawItems(ddbClient, tableName, scanOptions) {
     const params = {
         TableName: tableName,
@@ -151,6 +150,16 @@ async function scanDDBRawItems(ddbClient, tableName, scanOptions) {
         throw new Error("scanDDBRawItems failed:" + error.message);
     }
 }
+exports.scanDDBRawItems = scanDDBRawItems;
+/**
+ * Query items on a table or index using FilterExpression.
+ * USE IT CAREFULLY!
+ * @param ddbClient Client dynamoDB
+ * @param tableName Table name to add data
+ * @param pk Partition key value to query on table or index
+ * @param inefficientFilter Filter expression and query options info
+ * @returns Records in DynamoDB format
+ */
 async function inefficientQueryDDBRawItems(ddbClient, tableName, pk, inefficientFilter) {
     const pkFieldName = inefficientFilter?.queryOptions?.indexInfo
         ? inefficientFilter?.queryOptions.indexInfo.pkFieldName
@@ -220,3 +229,4 @@ async function inefficientQueryDDBRawItems(ddbClient, tableName, pk, inefficient
         throw new Error("inefficientQueryDDBRawItems failed:" + error.message);
     }
 }
+exports.inefficientQueryDDBRawItems = inefficientQueryDDBRawItems;
