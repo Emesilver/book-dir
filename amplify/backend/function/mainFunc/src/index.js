@@ -22,6 +22,7 @@ async function handler(event) {
     //await getRecentOrder('CLI001')
     //await queryBigOrders('CLI001', 100)
     await (0, seed_prods_1.seedProds)();
-    return { result: 'OK - Typescript' };
+    //await testQueryProdNamesByNameCache();
+    return { result: "OK - Typescript" };
 }
 exports.handler = handler;
