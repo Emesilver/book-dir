@@ -100,6 +100,16 @@ async function queryDDBRawItems(ddbClient, tableName, pk, queryOptions) {
         KeyConditionExpression: keysCondition,
         ExpressionAttributeValues: expAttrValues,
     };
+    let expAttrNames = undefined;
+    if (pkFieldName.startsWith("#"))
+        expAttrNames = { [pkFieldName]: pkFieldName.split("#")[1] };
+    if (skFieldName.startsWith("#") && queryOptions?.skFilter)
+        expAttrNames = {
+            ...expAttrNames,
+            [skFieldName]: skFieldName.split("#")[1],
+        };
+    if (expAttrNames)
+        params.ExpressionAttributeNames = expAttrNames;
     if (queryOptions?.indexInfo)
         params.IndexName = queryOptions.indexInfo.indexName;
     if (queryOptions?.limit)

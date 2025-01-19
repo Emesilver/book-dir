@@ -145,6 +145,15 @@ export async function queryDDBRawItems(
     KeyConditionExpression: keysCondition,
     ExpressionAttributeValues: expAttrValues,
   };
+  let expAttrNames: Record<string, string> = undefined;
+  if (pkFieldName.startsWith("#"))
+    expAttrNames = { [pkFieldName]: pkFieldName.split("#")[1] };
+  if (skFieldName.startsWith("#") && queryOptions?.skFilter)
+    expAttrNames = {
+      ...expAttrNames,
+      [skFieldName]: skFieldName.split("#")[1],
+    };
+  if (expAttrNames) params.ExpressionAttributeNames = expAttrNames;
   if (queryOptions?.indexInfo)
     params.IndexName = queryOptions.indexInfo.indexName;
   if (queryOptions?.limit) params.Limit = queryOptions.limit;
