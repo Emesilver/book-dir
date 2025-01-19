@@ -20,6 +20,7 @@ import {
   queryProdNamesByName,
   testQueryProdNamesByName,
   testQueryProdNamesByNameCache,
+  testMemory,
 } from "./prod";
 import { seedOrders } from "./seed-orders";
 import { seedProds } from "./seed-prods";
@@ -45,8 +46,11 @@ export async function handler(event: any) {
   //await queryOrderDetail('CLI001', '241228AC12')
   //await getRecentOrder('CLI001')
   //await queryBigOrders('CLI001', 100)
-  await seedProds();
-  //await testQueryProdNamesByNameCache();
+  //await seedProds();
+  //await queryProdNamesByName("MO");
+  //await testQueryProdNamesByName();
+  await testQueryProdNamesByNameCache();
+//  await testMemory();
 
   return { result: "OK - Typescript" };
 }
