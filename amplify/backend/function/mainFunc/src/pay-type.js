@@ -4,22 +4,22 @@ exports.queryPaymentTypesByName = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function queryPaymentTypesByName() {
-    const cadRep = new ddb_repository_1.DDBRepository('cadastro-dev', ddb_utils_1.DDBClient.client());
+    const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
     const indexInfo = {
-        indexName: 'sk-nome-index',
-        pkFieldName: 'sk',
-        skFieldName: 'nome'
+        indexName: "sk-nome-index",
+        pkFieldName: "sk",
+        skFieldName: "nome",
     };
     const skFilter = {
-        skBeginsWith: 'CARTAO'
+        skBeginsWith: "CARTAO",
     };
     const queryOptions = { indexInfo, skFilter };
     try {
         const paymentTypes = await cadRep.queryDDBItems("TIPO_PAGAMENTO", queryOptions);
-        console.log('Tipos de pagamentos:', paymentTypes);
+        console.log("Tipos de pagamentos:", paymentTypes);
     }
     catch (error) {
-        console.log('error:', error);
+        console.log("error:", error);
     }
 }
 exports.queryPaymentTypesByName = queryPaymentTypesByName;

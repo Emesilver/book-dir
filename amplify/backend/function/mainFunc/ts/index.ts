@@ -50,7 +50,7 @@ export async function handler(event: any) {
   //await queryProdNamesByName("MO");
   //await testQueryProdNamesByName();
   await testQueryProdNamesByNameCache();
-//  await testMemory();
+  //await testMemory();
 
   return { result: "OK - Typescript" };
 }

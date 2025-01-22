@@ -3,37 +3,41 @@ import { DDBClient } from "./ddb-utils";
 import { OrderGroup, Order, OrderItem, OrderPayment } from "./order.type";
 
 export async function seedOrders() {
-  await saveGroupOrder( buildGroupOrder1());
-  await saveGroupOrder( buildGroupOrder2());
-  await saveGroupOrder( buildGroupOrder3());
+  await saveGroupOrder(buildGroupOrder1());
+  await saveGroupOrder(buildGroupOrder2());
+  await saveGroupOrder(buildGroupOrder3());
 }
 
-async function saveGroupOrder({order, items, payments}: OrderGroup) {
-  const seedOrderRep = new DDBRepository('cadastro-dev', DDBClient.client());
+async function saveGroupOrder({ order, items, payments }: OrderGroup) {
+  const seedOrderRep = new DDBRepository("cadastro-dev", DDBClient.client());
   const pk = order.client_id;
 
   const prefix = {
-    order: 'ORD#',
-    item: 'ORD-IT#',
-    payment: 'ORD-PM#',
+    order: "ORD#",
+    item: "ORD-IT#",
+    payment: "ORD-PM#",
   };
-  
+
   // Gravar o cabecalho do pedido
   const skOrder = prefix.order + order.order_id;
-  console.log('Gravando pedido ', skOrder);
+  console.log("Gravando pedido ", skOrder);
   await seedOrderRep.putDDBItem(pk, skOrder, order);
 
   // Gravar os items em paralelo
-  await Promise.all(items.map(async (item) => {
-    const skItem = prefix.item + order.order_id + '#' + item.item_id;
-    return seedOrderRep.putDDBItem(pk, skItem, item)
-  }));
+  await Promise.all(
+    items.map(async (item) => {
+      const skItem = prefix.item + order.order_id + "#" + item.item_id;
+      return seedOrderRep.putDDBItem(pk, skItem, item);
+    })
+  );
 
   // Gravar os pagamentos em paralelo
-  await Promise.all(payments.map(async (pagto) => {
-    const skPagto = prefix.payment + order.order_id + '#' + pagto.paymnt_id;
-    return seedOrderRep.putDDBItem(pk, skPagto, pagto)
-  }));
+  await Promise.all(
+    payments.map(async (pagto) => {
+      const skPagto = prefix.payment + order.order_id + "#" + pagto.paymnt_id;
+      return seedOrderRep.putDDBItem(pk, skPagto, pagto);
+    })
+  );
 }
 
 function buildGroupOrder1() {
@@ -42,9 +46,9 @@ function buildGroupOrder1() {
     order_id: "241228AC12",
     client_name: "EMERSON",
     creation_date: "2024-12-28T11:23:01.000Z",
-    total_value: 120.00,
-    record_type: "ORDER"
-  }
+    total_value: 120.0,
+    record_type: "ORDER",
+  };
   const item1: OrderItem = {
     client_id: "CLI001",
     order_id: "241228AC12",
@@ -52,8 +56,8 @@ function buildGroupOrder1() {
     product_name: "PLACA DE VIDEO",
     quantity: 1,
     price: 80,
-    record_type: "ITEM"
-  }
+    record_type: "ITEM",
+  };
   const item2: OrderItem = {
     client_id: "CLI001",
     order_id: "241228AC12",
@@ -61,29 +65,29 @@ function buildGroupOrder1() {
     product_name: "PROCESSADOR",
     quantity: 2,
     price: 40,
-    record_type: "ITEM"
-  }
+    record_type: "ITEM",
+  };
   const pagto1: OrderPayment = {
     client_id: "CLI001",
     order_id: "241228AC12",
     paymnt_id: "PG001",
     paymnt_description: "CARTAO",
     paymnt_value: 60,
-    record_type: "PAYMNT"
-  }
+    record_type: "PAYMNT",
+  };
   const pagto2: OrderPayment = {
     client_id: "CLI001",
     order_id: "241228AC12",
     paymnt_id: "PG002",
     paymnt_description: "CARTAO",
     paymnt_value: 60,
-    record_type: "PAYMNT"
-  }
+    record_type: "PAYMNT",
+  };
   const grupoPedido: OrderGroup = {
     order: pedido,
     items: [item1, item2],
-    payments: [pagto1, pagto2]
-  }
+    payments: [pagto1, pagto2],
+  };
   return grupoPedido;
 }
 
@@ -93,9 +97,9 @@ function buildGroupOrder2() {
     order_id: "241224BA11",
     client_name: "EMERSON",
     creation_date: "2024-12-24T17:10:00.000Z",
-    total_value: 70.00,
-    record_type: "ORDER"
-  }
+    total_value: 70.0,
+    record_type: "ORDER",
+  };
   const item1: OrderItem = {
     client_id: "CLI001",
     order_id: "241224BA11",
@@ -103,21 +107,21 @@ function buildGroupOrder2() {
     product_name: "FONTE ELETRICA",
     quantity: 1,
     price: 70,
-    record_type: "ITEM"
-  }
+    record_type: "ITEM",
+  };
   const pagto1: OrderPayment = {
     client_id: "CLI001",
     order_id: "241224BA11",
     paymnt_id: "PG001",
     paymnt_description: "CARTAO",
     paymnt_value: 70,
-    record_type: "PAYMNT"
-  }
+    record_type: "PAYMNT",
+  };
   const grupoPedido: OrderGroup = {
     order: pedido,
     items: [item1],
-    payments: [pagto1]
-  }
+    payments: [pagto1],
+  };
   return grupoPedido;
 }
 
@@ -127,9 +131,9 @@ function buildGroupOrder3() {
     order_id: "241217AB1A",
     client_name: "CONCEICAO",
     creation_date: "2024-12-17T17:10:00.000Z",
-    total_value: 40.00,
-    record_type: "ORDER"
-  }
+    total_value: 40.0,
+    record_type: "ORDER",
+  };
   const item1: OrderItem = {
     client_id: "CLI002",
     order_id: "241217AB1A",
@@ -137,20 +141,20 @@ function buildGroupOrder3() {
     product_name: "FONTE ELETRICA",
     quantity: 1,
     price: 40,
-    record_type: "ITEM"
-  }
+    record_type: "ITEM",
+  };
   const pagto1: OrderPayment = {
     client_id: "CLI002",
     order_id: "241217AB1A",
     paymnt_id: "PG001",
     paymnt_description: "CARTAO",
     paymnt_value: 40,
-    record_type: "PAYMNT"
-  }
+    record_type: "PAYMNT",
+  };
   const grupoPedido: OrderGroup = {
     order: pedido,
     items: [item1],
-    payments: [pagto1]
-  }
+    payments: [pagto1],
+  };
   return grupoPedido;
 }

@@ -6,14 +6,17 @@ const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
  * Creates a list of props to be used in a SET UpdateExpression
  */
 function buildSETUpdateExpression(obj) {
-    return 'SET ' + Object.keys(obj).map((key) => key + '=:' + key).join(', ');
+    return ("SET " +
+        Object.keys(obj)
+            .map((key) => key + "=:" + key)
+            .join(", "));
 }
 exports.buildSETUpdateExpression = buildSETUpdateExpression;
 /**
  * Creates a list of fields to be used at REMOVE UpdateExpression
  */
 function buildREMOVEUpdateExpression(fields) {
-    return 'REMOVE ' + fields.join(', ');
+    return "REMOVE " + fields.join(", ");
 }
 exports.buildREMOVEUpdateExpression = buildREMOVEUpdateExpression;
 /**
@@ -26,7 +29,7 @@ function objectToDDB(obj, keyNamePrefix) {
     const convMap = (objMap) => {
         const retObjMap = {};
         for (const key of Object.keys(objMap)) {
-            if (typeof objMap[key] === 'object')
+            if (typeof objMap[key] === "object")
                 retObjMap[key] = { M: convMap(objMap[key]) };
             else {
                 const attributeValue = buildAttributeValue(objMap[key]);
@@ -39,7 +42,7 @@ function objectToDDB(obj, keyNamePrefix) {
     const retObject = {};
     for (const key of Object.keys(obj)) {
         const newKey = keyNamePrefix ? keyNamePrefix + key : key;
-        if (typeof obj[key] === 'object')
+        if (typeof obj[key] === "object")
             retObject[newKey] = { M: convMap(obj[key]) };
         else {
             const attributeValue = buildAttributeValue(obj[key]);
@@ -58,7 +61,7 @@ function ddbToObject(rawItem) {
         return null;
     const retObj = {};
     for (const key of Object.keys(rawItem)) {
-        if (key !== 'pk' && key !== 'sk') {
+        if (key !== "pk" && key !== "sk") {
             if (rawItem[key].M)
                 retObj[key] = ddbToObject(rawItem[key].M);
             else
@@ -73,9 +76,12 @@ exports.ddbToObject = ddbToObject;
  */
 function buildAttributeValue(value) {
     switch (typeof value) {
-        case 'string': return { S: value };
-        case 'boolean': return { BOOL: value };
-        case 'number': return { N: value.toString() };
+        case "string":
+            return { S: value };
+        case "boolean":
+            return { BOOL: value };
+        case "number":
+            return { N: value.toString() };
     }
 }
 /**
@@ -84,17 +90,19 @@ function buildAttributeValue(value) {
 function buildObjectProp(attValue) {
     const attValueType = Object.keys(attValue)[0];
     switch (attValueType) {
-        case 'S': return attValue.S;
-        case 'N': return parseFloat(attValue.N);
-        case 'BOOL': return attValue.BOOL;
+        case "S":
+            return attValue.S;
+        case "N":
+            return parseFloat(attValue.N);
+        case "BOOL":
+            return attValue.BOOL;
     }
 }
 class DDBClient {
     constructor() { }
     static client() {
         if (!DDBClient.instance) {
-            DDBClient.instance = new client_dynamodb_1.DynamoDBClient({ region: 'us-east-2' });
-            ;
+            DDBClient.instance = new client_dynamodb_1.DynamoDBClient({ region: "us-east-2" });
         }
         return DDBClient.instance;
     }

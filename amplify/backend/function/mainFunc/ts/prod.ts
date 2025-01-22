@@ -386,5 +386,4 @@ export async function testQueryProdNamesByNameCache() {
   console.time("MOU call");
   await prodsCache.getItems("MOU");
   console.timeEnd("MOU call");
-
 }
