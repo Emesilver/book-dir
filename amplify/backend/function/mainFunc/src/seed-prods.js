@@ -23,7 +23,7 @@ exports.seedProds = seedProds;
 function getProdNames() {
     return [
         "HEADSET GAMER PROFESSIONAL 7.1",
-        "MOUSE GAMER RGB",
+        "Mouse gamer RGB",
         "GAMING MECHANICAL KEYBOARD",
         "JOYSTICK ARCADE RETRO",
         "MONITOR GAMER 144HZ",

@@ -23,8 +23,8 @@ async function handler(event) {
     //await queryBigOrders('CLI001', 100)
     //await seedProds();
     //await queryProdNamesByName("MO");
-    //await testQueryProdNamesByName();
-    await (0, prod_1.testQueryProdNamesByNameCache)();
+    await (0, prod_1.testQueryProdNamesByName)();
+    //await testQueryProdNamesByNameCache();
     //await testMemory();
     return { result: "OK - Typescript" };
 }

@@ -301,12 +301,12 @@ function buildProd2() {
 export async function queryProdNamesByName(nameStart: string) {
   const cadRep = new DDBRepository("cadastro-dev", DDBClient.client());
   const indexInfo: IndexInfo = {
-    indexName: "sk-name-index",
+    indexName: "sk-name_upper-index",
     pkFieldName: "sk",
-    skFieldName: "#name",
+    skFieldName: "name_upper",
   };
   const skFilter: SKFilter = {
-    skBeginsWith: nameStart,
+    skBeginsWith: nameStart.toUpperCase(),
   };
   const queryOptions: QueryOptions = { skFilter, indexInfo };
   const prods = await cadRep.queryDDBItems<Product>("PRODUCT", queryOptions);
@@ -327,7 +327,7 @@ export async function testQueryProdNamesByName() {
   console.timeEnd("MO call time");
 
   console.time("MOU call time");
-  await queryProdNamesByName("MOU");
+  await queryProdNamesByName("MoU");
   console.timeEnd("MOU call time");
 }
 

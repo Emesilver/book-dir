@@ -30,6 +30,8 @@ export class DDBRepository {
       sk: { S: sk },
       ...objectToDDB(item),
     };
+    if (item["name"])
+      rawItem["name_upper"] = { S: (item["name"] as string).toUpperCase() };
     await putDDBRawItem(this.ddbClient, this.tableName, rawItem);
   }
 
@@ -38,8 +40,14 @@ export class DDBRepository {
       pk: { S: pk },
       sk: { S: sk },
     };
-    const updateExp = buildSETUpdateExpression(item);
+    let updateExp = buildSETUpdateExpression(item);
     const updateExpValues = objectToDDB(item, ":");
+    if (item["name"]) {
+      updateExp += ", name_upper=:name_upper";
+      updateExpValues[":name_upper"] = {
+        S: (item["name"] as string).toUpperCase(),
+      };
+    }
     await updateDDBRawItem(
       this.ddbClient,
       this.tableName,

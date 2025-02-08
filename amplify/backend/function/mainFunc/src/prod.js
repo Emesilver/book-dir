@@ -281,12 +281,12 @@ function buildProd2() {
 async function queryProdNamesByName(nameStart) {
     const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
     const indexInfo = {
-        indexName: "sk-name-index",
+        indexName: "sk-name_upper-index",
         pkFieldName: "sk",
-        skFieldName: "#name",
+        skFieldName: "name_upper",
     };
     const skFilter = {
-        skBeginsWith: nameStart,
+        skBeginsWith: nameStart.toUpperCase(),
     };
     const queryOptions = { skFilter, indexInfo };
     const prods = await cadRep.queryDDBItems("PRODUCT", queryOptions);
@@ -305,7 +305,7 @@ async function testQueryProdNamesByName() {
     await queryProdNamesByName("MO");
     console.timeEnd("MO call time");
     console.time("MOU call time");
-    await queryProdNamesByName("MOU");
+    await queryProdNamesByName("MoU");
     console.timeEnd("MOU call time");
 }
 exports.testQueryProdNamesByName = testQueryProdNamesByName;
