@@ -22,6 +22,7 @@ import {
   testQueryProdNamesByNameCache,
   testMemory,
 } from "./prod";
+import { seedCustomers } from "./seed-cust";
 import { seedOrders } from "./seed-orders";
 import { seedProds } from "./seed-prods";
 
@@ -48,9 +49,10 @@ export async function handler(event: any) {
   //await queryBigOrders('CLI001', 100)
   //await seedProds();
   //await queryProdNamesByName("MO");
-  await testQueryProdNamesByName();
+  //await testQueryProdNamesByName();
   //await testQueryProdNamesByNameCache();
   //await testMemory();
+  await seedCustomers();
 
   return { result: "OK - Typescript" };
 }
