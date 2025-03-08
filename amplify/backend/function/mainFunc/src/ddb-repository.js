@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DDBRepository = void 0;
+exports.DDBRepository = exports.WriteDDBTranItemType = void 0;
 const ddb_utils_1 = require("./ddb-utils");
 const ddb_1 = require("./ddb");
+var WriteDDBTranItemType;
+(function (WriteDDBTranItemType) {
+    WriteDDBTranItemType["PUT"] = "put";
+    WriteDDBTranItemType["UPDATE"] = "update";
+    WriteDDBTranItemType["DELETE"] = "delete";
+})(WriteDDBTranItemType = exports.WriteDDBTranItemType || (exports.WriteDDBTranItemType = {}));
 class DDBRepository {
     constructor(tableName, ddbClient) {
         this.tableName = tableName;
         this.ddbClient = ddbClient;
     }
     async putDDBItem(pk, sk, item) {
-        const rawItem = {
-            pk: { S: pk },
-            sk: { S: sk },
-            ...(0, ddb_utils_1.objectToDDB)(item),
-        };
-        if (item["name"])
-            rawItem["name_upper"] = { S: item["name"].toUpperCase() };
+        const rawItem = this.buildRawItem(pk, sk, item);
         await (0, ddb_1.putDDBRawItem)(this.ddbClient, this.tableName, rawItem);
     }
     async upsertDDBItem(pk, sk, item) {
@@ -32,6 +32,26 @@ class DDBRepository {
             };
         }
         await (0, ddb_1.updateDDBRawItem)(this.ddbClient, this.tableName, key, updateExp, updateExpValues);
+    }
+    async writeDDBTransaction(transactionOperations) {
+        const rawWriteItems = [];
+        for (const transactionOperation of transactionOperations) {
+            if (transactionOperation.itemType === WriteDDBTranItemType.PUT) {
+                const rawItem = this.buildRawItem(transactionOperation.item.pk, transactionOperation.item.sk, transactionOperation.item.item);
+                const writeDDBRawTransCommand = {
+                    commandType: ddb_1.WriteDDBRawTranType.PUT,
+                    rawItem: rawItem,
+                };
+                rawWriteItems.push(writeDDBRawTransCommand);
+            }
+            if (transactionOperation.itemType === WriteDDBTranItemType.UPDATE) {
+                // TODO
+            }
+            if (transactionOperation.itemType === WriteDDBTranItemType.DELETE) {
+                // TODO
+            }
+        }
+        await (0, ddb_1.writeDDBRawTran)(this.ddbClient, this.tableName, rawWriteItems);
     }
     async getDDBItem(pk, sk) {
         const key = {
@@ -56,6 +76,16 @@ class DDBRepository {
         const rawItems = await (0, ddb_1.inefficientQueryDDBRawItems)(this.ddbClient, this.tableName, pk, inefficientFilter);
         const retObjs = rawItems.map((rawItem) => (0, ddb_utils_1.ddbToObject)(rawItem));
         return retObjs;
+    }
+    buildRawItem(pk, sk, item) {
+        const rawItem = {
+            pk: { S: pk },
+            sk: { S: sk },
+            ...(0, ddb_utils_1.objectToDDB)(item),
+        };
+        if (item["name"])
+            rawItem["name_upper"] = { S: item["name"].toUpperCase() };
+        return rawItem;
     }
 }
 exports.DDBRepository = DDBRepository;

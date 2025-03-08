@@ -14,8 +14,24 @@ import {
   scanDDBRawItems,
   ScanOptions,
   updateDDBRawItem,
+  writeDDBRawTran,
+  WriteDDBRawTranCommand,
+  WriteDDBRawTranType,
 } from "./ddb";
 
+export enum WriteDDBTranItemType {
+  PUT = "put",
+  UPDATE = "update",
+  DELETE = "delete",
+}
+export type WriteDDBTransactionOperation = {
+  itemType: WriteDDBTranItemType;
+  item: {
+    pk: string;
+    sk: string;
+    item: Object;
+  };
+};
 export class DDBRepository {
   private tableName: string;
   private ddbClient: DynamoDBClient;
@@ -25,13 +41,7 @@ export class DDBRepository {
   }
 
   public async putDDBItem(pk: string, sk: string, item: Object) {
-    const rawItem: Record<string, AttributeValue> = {
-      pk: { S: pk },
-      sk: { S: sk },
-      ...objectToDDB(item),
-    };
-    if (item["name"])
-      rawItem["name_upper"] = { S: (item["name"] as string).toUpperCase() };
+    const rawItem = this.buildRawItem(pk, sk, item);
     await putDDBRawItem(this.ddbClient, this.tableName, rawItem);
   }
 
@@ -55,6 +65,34 @@ export class DDBRepository {
       updateExp,
       updateExpValues
     );
+  }
+
+  public async writeDDBTransaction(
+    transactionOperations: WriteDDBTransactionOperation[]
+  ) {
+    const rawWriteItems: WriteDDBRawTranCommand[] = [];
+    for (const transactionOperation of transactionOperations) {
+      if (transactionOperation.itemType === WriteDDBTranItemType.PUT) {
+        const rawItem = this.buildRawItem(
+          transactionOperation.item.pk,
+          transactionOperation.item.sk,
+          transactionOperation.item.item
+        );
+        const writeDDBRawTransCommand: WriteDDBRawTranCommand = {
+          commandType: WriteDDBRawTranType.PUT,
+          rawItem: rawItem,
+        };
+        rawWriteItems.push(writeDDBRawTransCommand);
+      }
+      if (transactionOperation.itemType === WriteDDBTranItemType.UPDATE) {
+        // TODO
+      }
+      if (transactionOperation.itemType === WriteDDBTranItemType.DELETE) {
+        // TODO
+      }
+    }
+
+    await writeDDBRawTran(this.ddbClient, this.tableName, rawWriteItems);
   }
 
   public async getDDBItem<T>(pk: string, sk: string) {
@@ -100,5 +138,16 @@ export class DDBRepository {
     );
     const retObjs = rawItems.map((rawItem) => ddbToObject<T>(rawItem));
     return retObjs;
+  }
+
+  private buildRawItem(pk: string, sk: string, item: Object) {
+    const rawItem: Record<string, AttributeValue> = {
+      pk: { S: pk },
+      sk: { S: sk },
+      ...objectToDDB(item),
+    };
+    if (item["name"])
+      rawItem["name_upper"] = { S: (item["name"] as string).toUpperCase() };
+    return rawItem;
   }
 }

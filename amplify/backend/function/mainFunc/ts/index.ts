@@ -22,7 +22,7 @@ import {
   testQueryProdNamesByNameCache,
   testMemory,
 } from "./prod";
-import { seedCustomers } from "./seed-cust";
+import { seedCustomers, seedCustomersTran } from "./seed-cust";
 import { seedOrders } from "./seed-orders";
 import { seedProds } from "./seed-prods";
 
@@ -52,7 +52,8 @@ export async function handler(event: any) {
   //await testQueryProdNamesByName();
   //await testQueryProdNamesByNameCache();
   //await testMemory();
-  await seedCustomers();
+  //await seedCustomers();
+  await seedCustomersTran();
 
   return { result: "OK - Typescript" };
 }

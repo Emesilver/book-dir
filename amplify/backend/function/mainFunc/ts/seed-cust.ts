@@ -1,5 +1,9 @@
 import { Customer, CustomerReferral } from "./cust.type";
-import { DDBRepository } from "./ddb-repository";
+import {
+  DDBRepository,
+  WriteDDBTranItemType,
+  WriteDDBTransactionOperation,
+} from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 
 export async function seedCustomers() {
@@ -17,6 +21,37 @@ export async function seedCustomers() {
       );
     }
     console.log("Added " + customer.name);
+  }
+}
+
+export async function seedCustomersTran() {
+  const custsRep = new DDBRepository("cadastro-dev", DDBClient.client());
+  const seedList = getCustomers();
+  for (const { customer, customerReferral } of seedList) {
+    const transactionOperations: WriteDDBTransactionOperation[] = [];
+    const newCustomer: WriteDDBTransactionOperation = {
+      itemType: WriteDDBTranItemType.PUT,
+      item: {
+        pk: customer.cust_id,
+        sk: "CUSTOMER",
+        item: customer,
+      },
+    };
+    transactionOperations.push(newCustomer);
+
+    if (customerReferral) {
+      const newCustomerReferral: WriteDDBTransactionOperation = {
+        itemType: WriteDDBTranItemType.PUT,
+        item: {
+          pk: customerReferral.cust_referrer_id,
+          sk: `CUSTOMER-REFERRAL#${customerReferral.cust_referred_id}`,
+          item: customerReferral,
+        },
+      };
+      transactionOperations.push(newCustomerReferral);
+    }
+    await custsRep.writeDDBTransaction(transactionOperations);
+    console.log("Added in transaction: " + customer.name);
   }
 }
 

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inefficientQueryDDBRawItems = exports.scanDDBRawItems = exports.queryDDBRawItems = exports.getDDBRawItem = exports.updateDDBRawItem = exports.putDDBRawItem = void 0;
+exports.writeDDBRawTran = exports.WriteDDBRawTranType = exports.inefficientQueryDDBRawItems = exports.scanDDBRawItems = exports.queryDDBRawItems = exports.getDDBRawItem = exports.updateDDBRawItem = exports.putDDBRawItem = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
  * Add a new record or override an existing one
@@ -240,3 +240,41 @@ async function inefficientQueryDDBRawItems(ddbClient, tableName, pk, inefficient
     }
 }
 exports.inefficientQueryDDBRawItems = inefficientQueryDDBRawItems;
+var WriteDDBRawTranType;
+(function (WriteDDBRawTranType) {
+    WriteDDBRawTranType["PUT"] = "put";
+    WriteDDBRawTranType["UPDATE"] = "update";
+    WriteDDBRawTranType["DELETE"] = "delete";
+    WriteDDBRawTranType["CONDITION"] = "condition";
+})(WriteDDBRawTranType = exports.WriteDDBRawTranType || (exports.WriteDDBRawTranType = {}));
+async function writeDDBRawTran(ddbClient, tableName, rawWriteItems) {
+    const params = {
+        TransactItems: [],
+    };
+    for (const rawWriteItem of rawWriteItems) {
+        if (rawWriteItem.commandType === WriteDDBRawTranType.PUT) {
+            const putParam = {
+                TableName: tableName,
+                Item: rawWriteItem.rawItem,
+            };
+            const transactionItem = { Put: putParam };
+            params.TransactItems.push(transactionItem);
+        }
+        if (rawWriteItem.commandType === WriteDDBRawTranType.UPDATE) {
+            // TODO
+        }
+        if (rawWriteItem.commandType === WriteDDBRawTranType.DELETE) {
+            // TODO
+        }
+        if (rawWriteItem.commandType === WriteDDBRawTranType.CONDITION) {
+            // TODO
+        }
+    }
+    try {
+        await ddbClient.send(new client_dynamodb_1.TransactWriteItemsCommand(params));
+    }
+    catch (error) {
+        console.log("writeDDBRawTransaction failed:", error.message);
+    }
+}
+exports.writeDDBRawTran = writeDDBRawTran;

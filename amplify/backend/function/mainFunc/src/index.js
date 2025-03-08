@@ -26,7 +26,8 @@ async function handler(event) {
     //await testQueryProdNamesByName();
     //await testQueryProdNamesByNameCache();
     //await testMemory();
-    await (0, seed_cust_1.seedCustomers)();
+    //await seedCustomers();
+    await (0, seed_cust_1.seedCustomersTran)();
     return { result: "OK - Typescript" };
 }
 exports.handler = handler;

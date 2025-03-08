@@ -13,6 +13,10 @@ import {
   ScanCommandInput,
   ScanCommand,
   ScanCommandOutput,
+  TransactWriteItemsInput,
+  TransactWriteItem,
+  Put,
+  TransactWriteItemsCommand,
 } from "@aws-sdk/client-dynamodb";
 
 /**
@@ -306,5 +310,49 @@ export async function inefficientQueryDDBRawItems(
     return allItems;
   } catch (error) {
     throw new Error("inefficientQueryDDBRawItems failed:" + error.message);
+  }
+}
+
+export enum WriteDDBRawTranType {
+  PUT = "put",
+  UPDATE = "update",
+  DELETE = "delete",
+  CONDITION = "condition",
+}
+export type WriteDDBRawTranCommand = {
+  commandType: WriteDDBRawTranType;
+  rawItem: Record<string, AttributeValue>;
+};
+export async function writeDDBRawTran(
+  ddbClient: DynamoDBClient,
+  tableName: string,
+  rawWriteItems: WriteDDBRawTranCommand[]
+) {
+  const params: TransactWriteItemsInput = {
+    TransactItems: [],
+  };
+  for (const rawWriteItem of rawWriteItems) {
+    if (rawWriteItem.commandType === WriteDDBRawTranType.PUT) {
+      const putParam: Put = {
+        TableName: tableName,
+        Item: rawWriteItem.rawItem,
+      };
+      const transactionItem: TransactWriteItem = { Put: putParam };
+      params.TransactItems.push(transactionItem);
+    }
+    if (rawWriteItem.commandType === WriteDDBRawTranType.UPDATE) {
+      // TODO
+    }
+    if (rawWriteItem.commandType === WriteDDBRawTranType.DELETE) {
+      // TODO
+    }
+    if (rawWriteItem.commandType === WriteDDBRawTranType.CONDITION) {
+      // TODO
+    }
+  }
+  try {
+    await ddbClient.send(new TransactWriteItemsCommand(params));
+  } catch (error) {
+    console.log("writeDDBRawTransaction failed:", error.message);
   }
 }
