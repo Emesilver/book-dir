@@ -1,4 +1,5 @@
 import {
+  getCustomerAndOrder,
   getRecentOrder,
   queryBigOrders,
   queryOrderDetail,
@@ -23,6 +24,7 @@ import {
   testMemory,
 } from "./prod";
 import { seedCustomers, seedCustomersTran } from "./seed-cust";
+import { seedCustCli001 } from "./seed-cust-cli001";
 import { seedOrders } from "./seed-orders";
 import { seedProds } from "./seed-prods";
 
@@ -53,7 +55,9 @@ export async function handler(event: any) {
   //await testQueryProdNamesByNameCache();
   //await testMemory();
   //await seedCustomers();
-  await seedCustomersTran();
+  //await seedCustomersTran();
+  //await seedCustCli001();
+  await getCustomerAndOrder("CLI001", "241228AC12");
 
   return { result: "OK - Typescript" };
 }

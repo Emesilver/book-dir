@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeDDBRawTran = exports.WriteDDBRawTranType = exports.inefficientQueryDDBRawItems = exports.scanDDBRawItems = exports.queryDDBRawItems = exports.getDDBRawItem = exports.updateDDBRawItem = exports.putDDBRawItem = void 0;
+exports.getDDBRawTran = exports.writeDDBRawTran = exports.WriteDDBRawTranType = exports.inefficientQueryDDBRawItems = exports.scanDDBRawItems = exports.queryDDBRawItems = exports.getDDBRawItem = exports.updateDDBRawItem = exports.putDDBRawItem = void 0;
 const client_dynamodb_1 = require("@aws-sdk/client-dynamodb");
 /**
  * Add a new record or override an existing one
@@ -278,3 +278,29 @@ async function writeDDBRawTran(ddbClient, tableName, rawWriteItems) {
     }
 }
 exports.writeDDBRawTran = writeDDBRawTran;
+/**
+ * Read multiple items in a transaction
+ */
+async function getDDBRawTran(ddbClient, tableName, rawKeys) {
+    const params = {
+        TransactItems: [],
+    };
+    for (const rawKey of rawKeys) {
+        const getKey = {
+            Key: rawKey,
+            TableName: tableName,
+        };
+        const transactGetItem = {
+            Get: getKey,
+        };
+        params.TransactItems.push(transactGetItem);
+    }
+    try {
+        const transactResult = await ddbClient.send(new client_dynamodb_1.TransactGetItemsCommand(params));
+        return transactResult.Responses;
+    }
+    catch (error) {
+        console.log("getDDBRawTransaction failed:", error.message);
+    }
+}
+exports.getDDBRawTran = getDDBRawTran;

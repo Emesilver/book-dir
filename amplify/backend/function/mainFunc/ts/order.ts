@@ -1,10 +1,11 @@
+import { Customer } from "./cust.type";
 import {
   AfterReadFilter,
   InefficientFilter,
   QueryOptions,
   SKFilter,
 } from "./ddb";
-import { DDBRepository } from "./ddb-repository";
+import { DDBRepository, PkSkGet } from "./ddb-repository";
 import { DDBClient } from "./ddb-utils";
 import { Order, OrderGroup, OrderItem, OrderPayment } from "./order.type";
 
@@ -82,4 +83,16 @@ export async function queryBigOrders(customer: string, minimumValue: number) {
   );
   console.log("Big orders:", bigOrders);
   return bigOrders;
+}
+
+export async function getCustomerAndOrder(clientId: string, orderId: string) {
+  const cadRep = new DDBRepository("cadastro-dev", DDBClient.client());
+  const customerKey: PkSkGet = { pk: clientId, sk: "CUSTOMER" };
+  const orderKey: PkSkGet = { pk: clientId, sk: "ORD#" + orderId };
+  const getTransactionResult = await cadRep.getDDBTransaction<Customer, Order>(
+    customerKey,
+    orderKey
+  );
+  console.log("Customer -> ", getTransactionResult.itemFromKey1);
+  console.log("Order -> ", getTransactionResult.itemFromKey2);
 }

@@ -53,6 +53,17 @@ class DDBRepository {
         }
         await (0, ddb_1.writeDDBRawTran)(this.ddbClient, this.tableName, rawWriteItems);
     }
+    async getDDBTransaction(pkSkGet1, pkSkGet2) {
+        const rawKeys = [
+            { pk: { S: pkSkGet1.pk }, sk: { S: pkSkGet1.sk } },
+            { pk: { S: pkSkGet2.pk }, sk: { S: pkSkGet2.sk } },
+        ];
+        const retObjs = await (0, ddb_1.getDDBRawTran)(this.ddbClient, this.tableName, rawKeys);
+        return {
+            itemFromKey1: (0, ddb_utils_1.ddbToObject)(retObjs[0].Item),
+            itemFromKey2: (0, ddb_utils_1.ddbToObject)(retObjs[1].Item),
+        };
+    }
     async getDDBItem(pk, sk) {
         const key = {
             pk: { S: pk },

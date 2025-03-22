@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.queryBigOrders = exports.getRecentOrder = exports.queryOrderDetail = exports.queryOrdersByCustomer = void 0;
+exports.getCustomerAndOrder = exports.queryBigOrders = exports.getRecentOrder = exports.queryOrderDetail = exports.queryOrdersByCustomer = void 0;
 const ddb_repository_1 = require("./ddb-repository");
 const ddb_utils_1 = require("./ddb-utils");
 async function queryOrdersByCustomer(customer) {
@@ -72,3 +72,12 @@ async function queryBigOrders(customer, minimumValue) {
     return bigOrders;
 }
 exports.queryBigOrders = queryBigOrders;
+async function getCustomerAndOrder(clientId, orderId) {
+    const cadRep = new ddb_repository_1.DDBRepository("cadastro-dev", ddb_utils_1.DDBClient.client());
+    const customerKey = { pk: clientId, sk: "CUSTOMER" };
+    const orderKey = { pk: clientId, sk: "ORD#" + orderId };
+    const getTransactionResult = await cadRep.getDDBTransaction(customerKey, orderKey);
+    console.log("Customer -> ", getTransactionResult.itemFromKey1);
+    console.log("Order -> ", getTransactionResult.itemFromKey2);
+}
+exports.getCustomerAndOrder = getCustomerAndOrder;

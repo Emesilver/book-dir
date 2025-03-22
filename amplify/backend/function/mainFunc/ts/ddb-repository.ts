@@ -6,6 +6,7 @@ import {
 } from "./ddb-utils";
 import {
   getDDBRawItem,
+  getDDBRawTran,
   InefficientFilter,
   inefficientQueryDDBRawItems,
   putDDBRawItem,
@@ -31,6 +32,10 @@ export type WriteDDBTransactionOperation = {
     sk: string;
     item: Object;
   };
+};
+export type PkSkGet = {
+  pk: string;
+  sk: string;
 };
 export class DDBRepository {
   private tableName: string;
@@ -93,6 +98,22 @@ export class DDBRepository {
     }
 
     await writeDDBRawTran(this.ddbClient, this.tableName, rawWriteItems);
+  }
+
+  public async getDDBTransaction<T1, T2>(pkSkGet1: PkSkGet, pkSkGet2: PkSkGet) {
+    const rawKeys: Record<string, AttributeValue>[] = [
+      { pk: { S: pkSkGet1.pk }, sk: { S: pkSkGet1.sk } },
+      { pk: { S: pkSkGet2.pk }, sk: { S: pkSkGet2.sk } },
+    ];
+    const retObjs = await getDDBRawTran(
+      this.ddbClient,
+      this.tableName,
+      rawKeys
+    );
+    return {
+      itemFromKey1: ddbToObject<T1>(retObjs[0].Item),
+      itemFromKey2: ddbToObject<T2>(retObjs[1].Item),
+    };
   }
 
   public async getDDBItem<T>(pk: string, sk: string) {
